@@ -1,0 +1,23 @@
+# Environment - .env has real API keys, never commit it
+.env
+# .env.development and .env.production are safe to commit (only API URLs)
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.db
+*.sqlite
+*.sqlite3
+.vscode/
+.idea/
+*.log
+node_modules/
+.DS_Store
+uploads/

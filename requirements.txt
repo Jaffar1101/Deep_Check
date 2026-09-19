@@ -1,0 +1,22 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+google-generativeai>=0.8.0
+openai>=1.50.0
+sqlalchemy>=2.0.36
+pydantic>=2.9.0
+pydantic-settings>=2.5.0
+python-dotenv>=1.0.1
+feedparser>=6.0.11
+requests==2.31.0
+beautifulsoup4==4.12.3
+aiohttp==3.9.1
+python-multipart==0.0.6
+websockets==12.0
+
+# Media Processing for Deepfake Detection
+opencv-python-headless==4.9.0.80
+Pillow>=11.0.0
+moviepy==1.0.3
+python-magic==0.4.27
+numpy>=1.26.4
+
