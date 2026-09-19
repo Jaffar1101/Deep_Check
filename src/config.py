@@ -22,8 +22,10 @@ class Settings(BaseSettings):
     # Twitter/X API (optional)
     twitter_bearer_token: Optional[str] = None
     
-    # Database
+    # Database & Supabase
     database_url: str = "sqlite:///./deepcheck.db"
+    supabase_url: Optional[str] = None
+    supabase_key: Optional[str] = None
     
     # API Configuration
     api_host: str = "0.0.0.0"
