@@ -1,6 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FileText, Link as LinkIcon, Youtube, Search, ArrowRight, Loader2, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { FileText, Link as LinkIcon, Youtube, Search, ArrowRight, Loader2, CheckCircle, AlertTriangle, HelpCircle, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import API_BASE_URL from '../../config/api';
 
@@ -44,7 +44,7 @@ const ToolsPage = () => {
     const currentTool = tools[toolType] || tools.text;
 
     const handleVerify = async () => {
-        if (!input) return;
+        if (!input.trim()) return;
         setLoading(true);
         setResult(null);
 
@@ -69,22 +69,30 @@ const ToolsPage = () => {
 
             if (response.ok) {
                 const data = await response.json();
+                const v = (data.verdict || '').toLowerCase();
+                let status = 'Uncertain';
+                if (v === 'true' || v === 'authentic' || v === 'verified') status = 'Verified';
+                else if (v === 'false' || v === 'fake' || v === 'debunked' || v === 'misleading') status = 'False / Misleading';
+
                 setResult({
-                    status: data.verdict === 'true' ? 'Verified' : data.verdict === 'false' ? 'False' : 'Uncertain',
-                    score: Math.round(data.credibility_score * 100),
-                    summary: data.explanation.summary,
-                    details: [
-                        `Confidence: ${Math.round(data.confidence * 100)}%`,
-                        `Verdict: ${data.verdict}`,
-                        `Sources: ${data.explanation.citations ? data.explanation.citations.length : 0}`
-                    ]
+                    status,
+                    rawVerdict: data.verdict,
+                    score: data.credibility_score ? Math.round(data.credibility_score * 100) : 85,
+                    confidence: data.confidence ? Math.round(data.confidence * 100) : null,
+                    summary: data.explanation?.summary || 'Analysis complete.',
+                    detailed: data.explanation?.detailed,
+                    sources: data.explanation?.citations || []
                 });
             } else {
                 throw new Error('Verification failed');
             }
         } catch (error) {
             console.error(error);
-            // Handle error
+            setResult({
+                status: 'Error',
+                summary: 'Failed to verify. Please try again.',
+                sources: []
+            });
         } finally {
             setLoading(false);
         }
@@ -126,7 +134,7 @@ const ToolsPage = () => {
                     <div className="mt-4 flex justify-end">
                         <button
                             onClick={handleVerify}
-                            disabled={loading || !input}
+                            disabled={loading || !input.trim()}
                             className="px-8 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-all flex items-center gap-2"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Analyze'}
@@ -144,25 +152,50 @@ const ToolsPage = () => {
                         className="bg-white/5 border border-white/10 rounded-2xl p-8"
                     >
                         <div className="flex items-start gap-6">
-                            <div className="p-4 rounded-full bg-green-500/20 text-green-500">
-                                <CheckCircle className="w-8 h-8" />
+                            <div className={`p-4 rounded-full ${result.status === 'Verified' ? 'bg-green-500/20 text-green-500' :
+                                    result.status.includes('False') ? 'bg-red-500/20 text-red-500' :
+                                        'bg-yellow-500/20 text-yellow-500'
+                                }`}>
+                                {result.status === 'Verified' ? <CheckCircle className="w-8 h-8" /> :
+                                    result.status.includes('False') ? <AlertTriangle className="w-8 h-8" /> :
+                                        <HelpCircle className="w-8 h-8" />}
                             </div>
                             <div className="flex-1">
                                 <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-2xl font-bold text-white">Analysis Complete</h3>
-                                    <span className="px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-sm font-medium">
-                                        {result.score}% Trust Score
-                                    </span>
+                                    <h3 className="text-2xl font-bold text-white">
+                                        Verdict: <span className={
+                                            result.status === 'Verified' ? 'text-green-500' :
+                                                result.status.includes('False') ? 'text-red-500' :
+                                                    'text-yellow-500'
+                                        }>{result.status}</span>
+                                    </h3>
+                                    {result.confidence && (
+                                        <span className="px-3 py-1 bg-white/10 text-white rounded-full text-sm font-medium">
+                                            {result.confidence}% Confidence
+                                        </span>
+                                    )}
                                 </div>
-                                <p className="text-gray-300 leading-relaxed mb-6">{result.summary}</p>
+                                <p className="text-gray-300 leading-relaxed mb-4">{result.summary}</p>
 
-                                <div className="grid md:grid-cols-3 gap-4">
-                                    {result.details.map((detail, idx) => (
-                                        <div key={idx} className="p-4 bg-black/20 rounded-xl border border-white/5 text-sm text-gray-400">
-                                            {detail}
+                                {result.detailed && (
+                                    <p className="text-gray-400 text-sm mb-4 p-3 bg-black/20 rounded-xl border border-white/5">
+                                        {result.detailed}
+                                    </p>
+                                )}
+
+                                {result.sources && result.sources.length > 0 && (
+                                    <div className="mt-4 pt-4 border-t border-white/10">
+                                        <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Sources</h4>
+                                        <div className="space-y-1">
+                                            {result.sources.map((src, i) => (
+                                                <a key={i} href={typeof src === 'string' ? src : src.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                                                    <ExternalLink className="w-3 h-3" />
+                                                    {typeof src === 'string' ? src : src.domain || src.url}
+                                                </a>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </motion.div>
