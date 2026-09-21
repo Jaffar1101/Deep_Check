@@ -7,6 +7,8 @@ const LandingPage = () => {
     const videoRef = useRef(null);
     const containerRef = useRef(null);
     const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+    const targetTimeRef = useRef(0);
+    const rafIdRef = useRef(null);
     const navigate = useNavigate();
 
     // Scroll progress for the entire container
@@ -17,9 +19,9 @@ const LandingPage = () => {
 
     // Smooth out the scroll progress
     const smoothProgress = useSpring(scrollYProgress, {
-        stiffness: 100,
-        damping: 30,
-        restDelta: 0.001
+        stiffness: 150,
+        damping: 25,
+        restDelta: 0.005
     });
 
     useEffect(() => {
@@ -44,20 +46,45 @@ const LandingPage = () => {
         };
     }, []);
 
-    // Sync video time with scroll
+    // Sync video time with scroll smoothly without blocking the decoder
     useEffect(() => {
         const video = videoRef.current;
         if (!video || !isVideoLoaded) return;
 
-        const unsubscribe = smoothProgress.onChange((latest) => {
+        const unsubscribe = smoothProgress.on("change", (latest) => {
             if (video.duration) {
                 // Map scroll progress (0-1) to video duration
-                const time = latest * (video.duration - 0.1);
-                video.currentTime = Math.max(0, Math.min(time, video.duration));
+                const targetTime = Math.max(0, Math.min(latest * (video.duration - 0.1), video.duration));
+                targetTimeRef.current = targetTime;
             }
         });
 
-        return () => unsubscribe();
+        // Use requestAnimationFrame loop to safely seek without flooding the decoder
+        const updateVideoFrame = () => {
+            if (video && video.duration) {
+                const target = targetTimeRef.current;
+                const diff = Math.abs(video.currentTime - target);
+
+                // Only seek if timestamp difference is noticeable and decoder is ready
+                if (diff > 0.04 && !video.seeking) {
+                    if ('fastSeek' in video) {
+                        video.fastSeek(target);
+                    } else {
+                        video.currentTime = target;
+                    }
+                }
+            }
+            rafIdRef.current = requestAnimationFrame(updateVideoFrame);
+        };
+
+        rafIdRef.current = requestAnimationFrame(updateVideoFrame);
+
+        return () => {
+            unsubscribe();
+            if (rafIdRef.current) {
+                cancelAnimationFrame(rafIdRef.current);
+            }
+        };
     }, [isVideoLoaded, smoothProgress]);
 
     const scrollToTop = () => {
@@ -67,7 +94,7 @@ const LandingPage = () => {
     return (
         <div ref={containerRef} className="relative bg-background min-h-[400vh]">
             {/* Fixed Header */}
-            <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-background/80 backdrop-blur-md border-b border-white/10">
+            <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-background/80 backdrop-blur-md border-b border-white/10 transform-gpu">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     <Link to="/" onClick={scrollToTop} className="flex items-center gap-2 group">
                         <img src={`${import.meta.env.BASE_URL}logo.png`} alt="DeepCheck Logo" className="w-8 h-8 object-contain" />
@@ -90,25 +117,27 @@ const LandingPage = () => {
             </nav>
 
             {/* Sticky Container for Hero Content & Video */}
-            <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+            <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center transform-gpu">
 
                 {/* Background Gradients */}
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] pointer-events-none" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] pointer-events-none" />
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] pointer-events-none transform-gpu" />
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] pointer-events-none transform-gpu" />
 
                 {/* Video Background / Element */}
-                <div className="absolute inset-0 z-0 flex items-center justify-center opacity-60">
+                <div className="absolute inset-0 z-0 flex items-center justify-center opacity-60 transform-gpu">
                     <video
                         ref={videoRef}
                         src={`${import.meta.env.BASE_URL}Model.mp4`}
-                        className="w-full h-full object-cover md:object-contain max-w-fit-content mx-auto"
+                        className="w-full h-full object-cover md:object-contain max-w-fit-content mx-auto transform-gpu"
                         muted
                         playsInline
                         preload="auto"
+                        disablePictureInPicture
+                        disableRemotePlayback
                     />
                     {/* Overlay gradient to blend video edges */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background pointer-events-none" />
                 </div>
 
                 {/* Hero Content Overlay */}
