@@ -13,10 +13,10 @@ const SignInPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden p-6">
+        <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden p-4 sm:p-6">
             {/* Background Elements */}
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] pointer-events-none" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] pointer-events-none" />
+            <div className="absolute top-1/4 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-primary/20 rounded-full blur-[128px] pointer-events-none" />
+            <div className="absolute bottom-1/4 right-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-secondary/20 rounded-full blur-[128px] pointer-events-none" />
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -24,7 +24,7 @@ const SignInPage = () => {
                 className="w-full max-w-md relative z-10"
             >
                 {/* Logo */}
-                <div className="flex justify-center mb-8">
+                <div className="flex justify-center mb-6 sm:mb-8">
                     <Link to="/" className="flex items-center gap-2 group">
                         <img src={`${import.meta.env.BASE_URL}logo.png`} alt="DeepCheck Logo" className="w-10 h-10 object-contain" />
                         <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 group-hover:to-white transition-all">
@@ -34,9 +34,9 @@ const SignInPage = () => {
                 </div>
 
                 {/* Card */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-                    <h2 className="text-3xl font-bold text-center mb-2 text-white">Welcome Back</h2>
-                    <p className="text-gray-400 text-center mb-8">Sign in to continue your verification</p>
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2 text-white">Welcome Back</h2>
+                    <p className="text-gray-400 text-center text-sm sm:text-base mb-6 sm:mb-8">Sign in to continue your verification</p>
 
                     <form className="space-y-4" onSubmit={handleSignIn}>
                         <div className="space-y-2">

@@ -66,37 +66,39 @@ const ContentChecker = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-12">
+        <div className="max-w-4xl mx-auto space-y-8 sm:space-y-12">
 
-            <div className="text-center space-y-6">
+            <div className="text-center space-y-4 sm:space-y-6">
                 <div>
-                    <h1 className="text-4xl font-bold text-white mb-3">Content Checker</h1>
-                    <p className="text-gray-400 text-lg">Verify posts, tweets, and media links from social platforms.</p>
+                    <h1 className="text-2xl sm:text-4xl font-bold text-white mb-2 sm:mb-3">Content Checker</h1>
+                    <p className="text-gray-400 text-sm sm:text-lg">Verify posts, tweets, and media links from social platforms.</p>
                 </div>
 
-                <div className="bg-[#111] border border-white/10 rounded-2xl p-8">
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                            <LinkIcon className="w-5 h-5 text-gray-500" />
+                <div className="bg-[#111] border border-white/10 rounded-2xl p-4 sm:p-8">
+                    <div className="flex flex-col sm:block relative">
+                        <div className="relative flex-1">
+                            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                                <LinkIcon className="w-5 h-5 text-gray-500" />
+                            </div>
+                            <input
+                                type="url"
+                                value={inputUrl}
+                                onChange={(e) => setInputUrl(e.target.value)}
+                                placeholder="Paste social media link (Twitter/X, Facebook, Instagram, TikTok)..."
+                                className="w-full bg-black/20 border border-white/10 rounded-xl py-3.5 sm:py-4 pl-12 pr-4 sm:pr-32 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-sm sm:text-lg"
+                            />
                         </div>
-                        <input
-                            type="url"
-                            value={inputUrl}
-                            onChange={(e) => setInputUrl(e.target.value)}
-                            placeholder="Paste social media link (Twitter/X, Facebook, Instagram, TikTok)..."
-                            className="w-full bg-black/20 border border-white/10 rounded-xl py-4 pl-12 pr-32 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-lg"
-                        />
                         <button
                             onClick={handleVerify}
                             disabled={loading || !inputUrl.trim()}
-                            className="absolute right-2 top-2 bottom-2 px-6 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-all flex items-center gap-2"
+                            className="mt-3 sm:mt-0 sm:absolute sm:right-2 sm:top-2 sm:bottom-2 w-full sm:w-auto px-6 py-3 sm:py-0 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                             Check
                         </button>
                     </div>
 
-                    <div className="mt-6 flex items-center justify-center gap-6 text-gray-500 text-sm">
+                    <div className="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-gray-500 text-xs sm:text-sm">
                         <span className="flex items-center gap-2"><Twitter className="w-4 h-4" /> Twitter/X</span>
                         <span className="flex items-center gap-2"><Facebook className="w-4 h-4" /> Facebook</span>
                         <span className="flex items-center gap-2"><Instagram className="w-4 h-4" /> Instagram</span>
@@ -110,10 +112,10 @@ const ContentChecker = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="bg-white/5 border border-white/10 rounded-2xl p-8"
+                        className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-8"
                     >
-                        <div className="flex items-start gap-6">
-                            <div className={`p-4 rounded-full ${result.statusType === 'authentic' ? 'bg-green-500/20 text-green-500' :
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+                            <div className={`p-4 rounded-full shrink-0 ${result.statusType === 'authentic' ? 'bg-green-500/20 text-green-500' :
                                     result.statusType === 'fake' ? 'bg-red-500/20 text-red-500' :
                                         'bg-yellow-500/20 text-yellow-500'
                                 }`}>
@@ -121,9 +123,9 @@ const ContentChecker = () => {
                                     result.statusType === 'fake' ? <AlertCircle className="w-8 h-8" /> :
                                         <HelpCircle className="w-8 h-8" />}
                             </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between items-center mb-2">
-                                    <h3 className="text-2xl font-bold text-white">
+                            <div className="flex-1 w-full">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white">
                                         Result: <span className={
                                             result.statusType === 'authentic' ? 'text-green-500' :
                                                 result.statusType === 'fake' ? 'text-red-500' :
@@ -131,14 +133,14 @@ const ContentChecker = () => {
                                         }>{result.rating}</span>
                                     </h3>
                                     {result.confidence && (
-                                        <span className="text-sm font-bold bg-white/10 px-3 py-1 rounded-full text-white">
+                                        <span className="text-xs sm:text-sm font-bold bg-white/10 px-3 py-1 rounded-full text-white w-fit mx-auto sm:mx-0">
                                             {result.confidence}% Confidence
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-gray-300 leading-relaxed mb-4">{result.summary}</p>
+                                <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4">{result.summary}</p>
                                 {result.detailed && (
-                                    <div className="p-4 bg-black/20 rounded-xl border border-white/5 text-sm text-gray-400">
+                                    <div className="p-4 bg-black/20 rounded-xl border border-white/5 text-xs sm:text-sm text-gray-400 text-left">
                                         {result.detailed}
                                     </div>
                                 )}
@@ -148,16 +150,16 @@ const ContentChecker = () => {
                 )}
             </AnimatePresence>
 
-            <div className="grid md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                    <Share2 className="w-8 h-8 text-secondary mb-4" />
-                    <h3 className="text-xl font-bold text-white mb-2">Viral Content Analysis</h3>
-                    <p className="text-gray-400">Analyze viral posts for coordinated bot activity and manipulation patterns.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div className="p-5 sm:p-6 rounded-2xl bg-white/5 border border-white/10">
+                    <Share2 className="w-7 h-7 sm:w-8 sm:h-8 text-secondary mb-3 sm:mb-4" />
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Viral Content Analysis</h3>
+                    <p className="text-gray-400 text-sm">Analyze viral posts for coordinated bot activity and manipulation patterns.</p>
                 </div>
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                    <AlertCircle className="w-8 h-8 text-accent mb-4" />
-                    <h3 className="text-xl font-bold text-white mb-2">Source Credibility</h3>
-                    <p className="text-gray-400">Check the history and reliability score of the account posting the content.</p>
+                <div className="p-5 sm:p-6 rounded-2xl bg-white/5 border border-white/10">
+                    <AlertCircle className="w-7 h-7 sm:w-8 sm:h-8 text-accent mb-3 sm:mb-4" />
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Source Credibility</h3>
+                    <p className="text-gray-400 text-sm">Check the history and reliability score of the account posting the content.</p>
                 </div>
             </div>
         </div>

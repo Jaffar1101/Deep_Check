@@ -119,28 +119,28 @@ const NewsVerifier = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto space-y-12">
+        <div className="max-w-6xl mx-auto space-y-8 sm:space-y-12">
 
             {/* Header & Input Section */}
-            <div className="text-center space-y-8">
+            <div className="text-center space-y-6 sm:space-y-8">
                 <div>
-                    <h1 className="text-4xl font-bold text-white mb-3">News Verifier</h1>
-                    <p className="text-gray-400 text-lg">Verify articles, claims, and URLs against trusted global sources.</p>
+                    <h1 className="text-2xl sm:text-4xl font-bold text-white mb-2 sm:mb-3">News Verifier</h1>
+                    <p className="text-gray-400 text-sm sm:text-lg">Verify articles, claims, and URLs against trusted global sources.</p>
                 </div>
 
-                <div className="max-w-3xl mx-auto bg-[#111] border border-white/10 rounded-2xl p-2">
+                <div className="max-w-3xl mx-auto bg-[#111] border border-white/10 rounded-2xl p-2 sm:p-3">
                     {/* Tabs */}
-                    <div className="flex gap-2 mb-4 p-1 bg-black/20 rounded-xl">
+                    <div className="flex gap-2 mb-3 sm:mb-4 p-1 bg-black/20 rounded-xl">
                         <button
                             onClick={() => setActiveTab('text')}
-                            className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'text' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+                            className={`flex-1 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'text' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'
                                 }`}
                         >
                             <FileText className="w-4 h-4" /> Verify Text
                         </button>
                         <button
                             onClick={() => setActiveTab('url')}
-                            className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'url' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+                            className={`flex-1 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'url' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'
                                 }`}
                         >
                             <LinkIcon className="w-4 h-4" /> Verify URL
@@ -148,32 +148,32 @@ const NewsVerifier = () => {
                     </div>
 
                     {/* Input Area */}
-                    <div className="relative">
+                    <div className="flex flex-col sm:block relative p-2">
                         {activeTab === 'text' ? (
                             <textarea
                                 value={inputText}
                                 onChange={(e) => setInputText(e.target.value)}
                                 placeholder="Paste the news text or claim here..."
-                                className="w-full h-40 bg-transparent text-white p-4 rounded-xl resize-none focus:outline-none placeholder:text-gray-600"
+                                className="w-full h-36 sm:h-40 bg-transparent text-white p-3 sm:p-4 rounded-xl resize-none focus:outline-none placeholder:text-gray-600 text-sm sm:text-base"
                             />
                         ) : (
-                            <div className="flex items-center px-4 h-40">
+                            <div className="flex items-center px-3 sm:px-4 h-24 sm:h-40">
                                 <input
                                     type="url"
                                     value={inputUrl}
                                     onChange={(e) => setInputUrl(e.target.value)}
                                     placeholder="https://example.com/news-article"
-                                    className="w-full bg-transparent text-white text-lg focus:outline-none placeholder:text-gray-600"
+                                    className="w-full bg-transparent text-white text-sm sm:text-lg focus:outline-none placeholder:text-gray-600"
                                 />
                             </div>
                         )}
 
                         {/* Verify Button */}
-                        <div className="absolute bottom-4 right-4">
+                        <div className="mt-3 sm:mt-0 sm:absolute sm:bottom-4 sm:right-4 flex justify-end">
                             <button
                                 onClick={handleVerify}
                                 disabled={loading || (activeTab === 'text' ? !inputText.trim() : !inputUrl.trim())}
-                                className="px-6 py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full font-bold transition-all flex items-center gap-2 shadow-lg shadow-primary/25"
+                                className="w-full sm:w-auto px-6 py-2.5 sm:py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl sm:rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 text-sm sm:text-base"
                             >
                                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                                 {loading ? 'Verifying...' : 'Verify Now'}
@@ -190,10 +190,10 @@ const NewsVerifier = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="bg-white/5 border border-white/10 rounded-2xl p-8"
+                        className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-8"
                     >
-                        <div className="flex items-start gap-6">
-                            <div className={`p-4 rounded-full ${verificationResult.rating === 'True' ? 'bg-green-500/20 text-green-500' :
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+                            <div className={`p-4 rounded-full shrink-0 ${verificationResult.rating === 'True' ? 'bg-green-500/20 text-green-500' :
                                     verificationResult.rating === 'False' ? 'bg-red-500/20 text-red-500' :
                                         verificationResult.rating === 'Misleading' ? 'bg-yellow-500/20 text-yellow-500' :
                                             'bg-gray-500/20 text-gray-400'
@@ -202,9 +202,9 @@ const NewsVerifier = () => {
                                     verificationResult.rating === 'False' ? <AlertTriangle className="w-8 h-8" /> :
                                         <HelpCircle className="w-8 h-8" />}
                             </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between items-center mb-2">
-                                    <h3 className="text-2xl font-bold text-white">
+                            <div className="flex-1 w-full">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white">
                                         Verdict: <span className={
                                             verificationResult.rating === 'True' ? 'text-green-500' :
                                                 verificationResult.rating === 'False' ? 'text-red-500' :
@@ -213,24 +213,24 @@ const NewsVerifier = () => {
                                         }>{verificationResult.rating}</span>
                                     </h3>
                                     {verificationResult.confidence && (
-                                        <span className="text-sm font-bold bg-white/10 px-3 py-1 rounded-full text-white">
+                                        <span className="text-xs sm:text-sm font-bold bg-white/10 px-3 py-1 rounded-full text-white w-fit mx-auto sm:mx-0">
                                             {verificationResult.confidence}% Confidence
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-gray-300 leading-relaxed mb-6">{verificationResult.summary}</p>
+                                <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">{verificationResult.summary}</p>
 
                                 {verificationResult.detailed && verificationResult.detailed !== verificationResult.summary && (
-                                    <div className="mb-6 p-4 bg-black/20 rounded-xl border border-white/5">
-                                        <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Detailed Analysis</h4>
-                                        <p className="text-gray-300 text-sm leading-relaxed">{verificationResult.detailed}</p>
+                                    <div className="mb-6 p-4 bg-black/20 rounded-xl border border-white/5 text-left">
+                                        <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Detailed Analysis</h4>
+                                        <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">{verificationResult.detailed}</p>
                                     </div>
                                 )}
 
                                 {verificationResult.what_to_do && verificationResult.what_to_do.length > 0 && (
-                                    <div className="mb-6 grid md:grid-cols-2 gap-4">
+                                    <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                                         <div className="p-4 bg-green-500/5 border border-green-500/20 rounded-xl">
-                                            <h4 className="text-sm font-semibold text-green-400 flex items-center gap-2 mb-2">
+                                            <h4 className="text-xs sm:text-sm font-semibold text-green-400 flex items-center gap-2 mb-2">
                                                 <Check className="w-4 h-4" /> What to Do
                                             </h4>
                                             <ul className="text-xs text-gray-300 space-y-1 list-disc list-inside">
@@ -241,7 +241,7 @@ const NewsVerifier = () => {
                                         </div>
                                         {verificationResult.what_to_avoid && verificationResult.what_to_avoid.length > 0 && (
                                             <div className="p-4 bg-red-500/5 border border-red-500/20 rounded-xl">
-                                                <h4 className="text-sm font-semibold text-red-400 flex items-center gap-2 mb-2">
+                                                <h4 className="text-xs sm:text-sm font-semibold text-red-400 flex items-center gap-2 mb-2">
                                                     <X className="w-4 h-4" /> What to Avoid
                                                 </h4>
                                                 <ul className="text-xs text-gray-300 space-y-1 list-disc list-inside">
@@ -255,11 +255,11 @@ const NewsVerifier = () => {
                                 )}
 
                                 {verificationResult.sources && verificationResult.sources.length > 0 && (
-                                    <div>
-                                        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Sources & Citations</h4>
+                                    <div className="text-left">
+                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Sources & Citations</h4>
                                         <div className="space-y-2">
                                             {verificationResult.sources.map((source, idx) => (
-                                                <a key={idx} href={typeof source === 'string' ? source : source.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-primary hover:underline text-sm">
+                                                <a key={idx} href={typeof source === 'string' ? source : source.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-primary hover:underline text-xs sm:text-sm">
                                                     <ExternalLink className="w-4 h-4" />
                                                     {typeof source === 'string' ? source : source.domain || source.url}
                                                 </a>
@@ -275,27 +275,27 @@ const NewsVerifier = () => {
 
             {/* Trending News Section */}
             <div>
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                        <TrendingUp className="w-6 h-6 text-secondary" />
+                <div className="flex items-center justify-between mb-6 sm:mb-8">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
                         Trending Verification Requests
                     </h2>
                 </div>
 
                 {trendingLoading ? (
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                         {[1, 2, 3].map((i) => (
                             <div key={i} className="h-64 bg-white/5 rounded-2xl animate-pulse" />
                         ))}
                     </div>
                 ) : (
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                         {trendingNews.length > 0 ? (
                             trendingNews.map((news, index) => (
                                 <NewsCard key={index} news={news} />
                             ))
                         ) : (
-                            <div className="col-span-3 text-center py-12 text-gray-500">
+                            <div className="col-span-1 md:col-span-3 text-center py-12 text-gray-500">
                                 No trending news available at the moment.
                             </div>
                         )}

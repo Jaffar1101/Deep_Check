@@ -10,6 +10,7 @@ import {
 const DashboardLayout = () => {
     const [isToolsOpen, setIsToolsOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
 
     const isActive = (path) => location.pathname.includes(path);
@@ -31,7 +32,7 @@ const DashboardLayout = () => {
     return (
         <div className="min-h-screen bg-background text-white flex flex-col">
             {/* Top Navigation */}
-            <nav className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/10 px-6 py-3">
+            <nav className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 py-3">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-2 group">
@@ -41,7 +42,7 @@ const DashboardLayout = () => {
                         </span>
                     </Link>
 
-                    {/* Main Navigation */}
+                    {/* Main Navigation (Desktop) */}
                     <div className="hidden md:flex items-center gap-1">
                         {navLinks.map((link) => (
                             <Link
@@ -104,11 +105,10 @@ const DashboardLayout = () => {
                     </div>
 
                     {/* Right Actions */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         <button
                             className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors relative group"
                             onClick={() => setIsSettingsOpen(true)}
-                            onMouseEnter={() => setIsSettingsOpen(true)}
                         >
                             <Settings className="w-5 h-5" />
                         </button>
@@ -117,12 +117,72 @@ const DashboardLayout = () => {
                                 <User className="w-4 h-4 text-white" />
                             </div>
                         </div>
+                        {/* Mobile Menu Toggle Button */}
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="md:hidden p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white"
+                            aria-label="Toggle Dashboard Menu"
+                        >
+                            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                        </button>
                     </div>
                 </div>
+
+                {/* Mobile Dropdown Navigation */}
+                <AnimatePresence>
+                    {isMobileMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="md:hidden mt-3 pt-3 border-t border-white/10 flex flex-col space-y-2 pb-3"
+                        >
+                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 py-1">
+                                Verifiers
+                            </div>
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.path}
+                                    to={link.path}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-3 ${isActive(link.path)
+                                        ? 'bg-white/10 text-white font-semibold'
+                                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                                        }`}
+                                >
+                                    <div className="p-1 rounded-md bg-white/5 text-primary">
+                                        {link.icon}
+                                    </div>
+                                    {link.name}
+                                </Link>
+                            ))}
+
+                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 pt-2 py-1">
+                                Extra Tools
+                            </div>
+                            {toolsLinks.map((tool) => (
+                                <Link
+                                    key={tool.path}
+                                    to={tool.path}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-3 ${isActive(tool.path)
+                                        ? 'bg-white/10 text-white font-semibold'
+                                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                                        }`}
+                                >
+                                    <div className="p-1 rounded-md bg-white/5 text-primary">
+                                        {tool.icon}
+                                    </div>
+                                    {tool.name}
+                                </Link>
+                            ))}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </nav>
 
             {/* Main Content Area */}
-            <main className="flex-1 max-w-7xl mx-auto w-full p-6 relative">
+            <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 relative">
                 <Outlet />
             </main>
 
@@ -145,8 +205,7 @@ const DashboardLayout = () => {
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 h-full w-80 bg-[#111] border-l border-white/10 z-50 shadow-2xl flex flex-col"
-                            onMouseLeave={() => setIsSettingsOpen(false)}
+                            className="fixed top-0 right-0 h-full w-full sm:w-80 bg-[#111] border-l border-white/10 z-50 shadow-2xl flex flex-col"
                         >
                             <div className="p-6 border-b border-white/10 flex items-center justify-between">
                                 <h2 className="text-xl font-bold text-white">Settings</h2>

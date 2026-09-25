@@ -100,24 +100,24 @@ const ToolsPage = () => {
 
     return (
         <div className="max-w-4xl mx-auto">
-            <div className="mb-8 flex items-center gap-4">
-                <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+            <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                <div className="p-3 bg-white/5 rounded-xl border border-white/10 shrink-0">
                     {currentTool.icon}
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-1">{currentTool.title}</h1>
-                    <p className="text-gray-400">{currentTool.description}</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">{currentTool.title}</h1>
+                    <p className="text-gray-400 text-sm sm:text-base">{currentTool.description}</p>
                 </div>
             </div>
 
-            <div className="bg-[#111] border border-white/10 rounded-2xl p-8 mb-8">
+            <div className="bg-[#111] border border-white/10 rounded-2xl p-4 sm:p-8 mb-6 sm:mb-8">
                 <div className="relative">
                     {currentTool.inputType === 'textarea' ? (
                         <textarea
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder={currentTool.placeholder}
-                            className="w-full h-48 bg-black/20 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all resize-none"
+                            className="w-full h-40 sm:h-48 bg-black/20 border border-white/10 rounded-xl p-3 sm:p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all resize-none text-sm sm:text-base"
                         />
                     ) : (
                         <div className="relative">
@@ -126,7 +126,7 @@ const ToolsPage = () => {
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder={currentTool.placeholder}
-                                className="w-full bg-black/20 border border-white/10 rounded-xl py-4 pl-4 pr-32 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl py-3.5 sm:py-4 pl-4 pr-4 sm:pr-32 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-sm sm:text-base"
                             />
                         </div>
                     )}
@@ -135,7 +135,7 @@ const ToolsPage = () => {
                         <button
                             onClick={handleVerify}
                             disabled={loading || !input.trim()}
-                            className="px-8 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-all flex items-center gap-2"
+                            className="w-full sm:w-auto px-8 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Analyze'}
                         </button>
@@ -149,10 +149,10 @@ const ToolsPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="bg-white/5 border border-white/10 rounded-2xl p-8"
+                        className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-8"
                     >
-                        <div className="flex items-start gap-6">
-                            <div className={`p-4 rounded-full ${result.status === 'Verified' ? 'bg-green-500/20 text-green-500' :
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+                            <div className={`p-4 rounded-full shrink-0 ${result.status === 'Verified' ? 'bg-green-500/20 text-green-500' :
                                     result.status.includes('False') ? 'bg-red-500/20 text-red-500' :
                                         'bg-yellow-500/20 text-yellow-500'
                                 }`}>
@@ -160,9 +160,9 @@ const ToolsPage = () => {
                                     result.status.includes('False') ? <AlertTriangle className="w-8 h-8" /> :
                                         <HelpCircle className="w-8 h-8" />}
                             </div>
-                            <div className="flex-1">
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-2xl font-bold text-white">
+                            <div className="flex-1 w-full">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white">
                                         Verdict: <span className={
                                             result.status === 'Verified' ? 'text-green-500' :
                                                 result.status.includes('False') ? 'text-red-500' :
@@ -170,21 +170,21 @@ const ToolsPage = () => {
                                         }>{result.status}</span>
                                     </h3>
                                     {result.confidence && (
-                                        <span className="px-3 py-1 bg-white/10 text-white rounded-full text-sm font-medium">
+                                        <span className="px-3 py-1 bg-white/10 text-white rounded-full text-xs sm:text-sm font-medium w-fit mx-auto sm:mx-0">
                                             {result.confidence}% Confidence
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-gray-300 leading-relaxed mb-4">{result.summary}</p>
+                                <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4">{result.summary}</p>
 
                                 {result.detailed && (
-                                    <p className="text-gray-400 text-sm mb-4 p-3 bg-black/20 rounded-xl border border-white/5">
+                                    <p className="text-gray-400 text-xs sm:text-sm mb-4 p-3 bg-black/20 rounded-xl border border-white/5 text-left">
                                         {result.detailed}
                                     </p>
                                 )}
 
                                 {result.sources && result.sources.length > 0 && (
-                                    <div className="mt-4 pt-4 border-t border-white/10">
+                                    <div className="mt-4 pt-4 border-t border-white/10 text-left">
                                         <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Sources</h4>
                                         <div className="space-y-1">
                                             {result.sources.map((src, i) => (

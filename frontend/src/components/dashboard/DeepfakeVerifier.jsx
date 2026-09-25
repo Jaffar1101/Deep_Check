@@ -158,18 +158,18 @@ const DeepfakeVerifier = () => {
     };
 
     return (
-        <div className="min-h-[80vh] flex flex-col items-center justify-center max-w-5xl mx-auto px-4">
+        <div className="min-h-[80vh] flex flex-col items-center justify-center max-w-5xl mx-auto px-2 sm:px-4">
 
             {/* Header */}
-            <div className="text-center mb-10">
-                <h1 className="text-4xl font-bold text-white mb-3">Deepfake Verifier</h1>
-                <p className="text-gray-400 text-lg">Upload videos or images to detect AI manipulation with high precision.</p>
+            <div className="text-center mb-6 sm:mb-10">
+                <h1 className="text-2xl sm:text-4xl font-bold text-white mb-2 sm:mb-3">Deepfake Verifier</h1>
+                <p className="text-gray-400 text-sm sm:text-lg">Upload videos or images to detect AI manipulation with high precision.</p>
             </div>
 
             {/* Upload Area */}
             <div className="w-full max-w-3xl">
                 <motion.div
-                    className={`relative border-2 border-dashed rounded-3xl p-16 text-center transition-all duration-300 ${dragActive ? 'border-primary bg-primary/10' : 'border-white/10 bg-white/5 hover:bg-white/10'
+                    className={`relative border-2 border-dashed rounded-3xl p-6 sm:p-12 md:p-16 text-center transition-all duration-300 ${dragActive ? 'border-primary bg-primary/10' : 'border-white/10 bg-white/5 hover:bg-white/10'
                         }`}
                     onDragEnter={handleDrag}
                     onDragLeave={handleDrag}
@@ -194,13 +194,13 @@ const DeepfakeVerifier = () => {
                                 exit={{ opacity: 0 }}
                                 className="flex flex-col items-center"
                             >
-                                <div className="relative w-24 h-24 mb-6">
+                                <div className="relative w-16 h-16 sm:w-24 sm:h-24 mb-4 sm:mb-6">
                                     <div className="absolute inset-0 border-4 border-white/10 rounded-full"></div>
                                     <div className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin"></div>
-                                    <Loader2 className="absolute inset-0 m-auto w-10 h-10 text-primary animate-pulse" />
+                                    <Loader2 className="absolute inset-0 m-auto w-8 h-8 sm:w-10 sm:h-10 text-primary animate-pulse" />
                                 </div>
-                                <h3 className="text-2xl font-bold text-white mb-2">Analyzing Media...</h3>
-                                <p className="text-gray-400">Scanning for artifacts and manipulation patterns</p>
+                                <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Analyzing Media...</h3>
+                                <p className="text-gray-400 text-xs sm:text-sm">Scanning for artifacts and manipulation patterns</p>
                             </motion.div>
                         ) : result ? (
                             <motion.div
@@ -209,28 +209,28 @@ const DeepfakeVerifier = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 className="flex flex-col items-center"
                             >
-                                <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 ${result.analysis.is_deepfake ? 'bg-red-500/20' : 'bg-green-500/20'
+                                <div className={`w-16 h-16 sm:w-24 sm:h-24 rounded-full flex items-center justify-center mb-4 sm:mb-6 ${result.analysis.is_deepfake ? 'bg-red-500/20' : 'bg-green-500/20'
                                     }`}>
                                     {result.analysis.is_deepfake ? (
-                                        <AlertCircle className="w-12 h-12 text-red-500" />
+                                        <AlertCircle className="w-8 h-8 sm:w-12 sm:h-12 text-red-500" />
                                     ) : (
-                                        <CheckCircle className="w-12 h-12 text-green-500" />
+                                        <CheckCircle className="w-8 h-8 sm:w-12 sm:h-12 text-green-500" />
                                     )}
                                 </div>
 
-                                <h3 className="text-3xl font-bold text-white mb-2">
+                                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                                     {result.analysis.is_deepfake ? 'Deepfake Detected' : 'Likely Authentic'}
                                 </h3>
 
-                                <div className="bg-black/30 rounded-xl p-6 mt-6 w-full text-left space-y-4">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-gray-400">Confidence Score</span>
-                                        <span className={`text-xl font-bold ${result.analysis.confidence > 80 ? 'text-green-400' : 'text-yellow-400'
+                                <div className="bg-black/30 rounded-xl p-4 sm:p-6 mt-4 sm:mt-6 w-full text-left space-y-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                                        <span className="text-gray-400 text-sm">Confidence Score</span>
+                                        <span className={`text-lg sm:text-xl font-bold ${result.analysis.confidence > 80 ? 'text-green-400' : 'text-yellow-400'
                                             }`}>
                                             {result.analysis.confidence}%
                                         </span>
                                     </div>
-                                    <p className="text-gray-300 leading-relaxed">
+                                    <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">
                                         {result.analysis.explanation}
                                     </p>
 
@@ -242,7 +242,7 @@ const DeepfakeVerifier = () => {
                                             </h4>
                                             <div className="space-y-1.5">
                                                 {result.analysis.artifacts.map((art, idx) => (
-                                                    <div key={idx} className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-lg text-xs text-red-200 flex justify-between">
+                                                    <div key={idx} className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-lg text-xs text-red-200 flex flex-col sm:flex-row justify-between gap-1">
                                                         <span className="font-semibold">{art.type || art.issue || 'Artifact'}:</span>
                                                         <span className="text-gray-300">{art.description || art.details}</span>
                                                     </div>
@@ -252,18 +252,18 @@ const DeepfakeVerifier = () => {
                                     )}
 
                                     {/* Feedback Section */}
-                                    <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-                                        <span className="text-sm text-gray-400">Was this analysis correct?</span>
-                                        <div className="flex gap-3">
+                                    <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                        <span className="text-xs sm:text-sm text-gray-400">Was this analysis correct?</span>
+                                        <div className="flex gap-3 w-full sm:w-auto">
                                             <button
                                                 onClick={() => handleFeedback(true)}
-                                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 text-sm transition-colors"
+                                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 text-xs sm:text-sm transition-colors"
                                             >
                                                 <ThumbsUp className="w-4 h-4" /> Yes
                                             </button>
                                             <button
                                                 onClick={() => handleFeedback(false)}
-                                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm transition-colors"
+                                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs sm:text-sm transition-colors"
                                             >
                                                 <ThumbsDown className="w-4 h-4" /> No
                                             </button>
@@ -273,7 +273,7 @@ const DeepfakeVerifier = () => {
 
                                 <button
                                     onClick={() => { setResult(null); setFile(null); }}
-                                    className="mt-8 px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full text-white font-medium transition-colors"
+                                    className="mt-6 sm:mt-8 px-6 sm:px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full text-white text-xs sm:text-sm font-medium transition-colors w-full sm:w-auto"
                                 >
                                     Analyze Another File
                                 </button>
@@ -285,22 +285,22 @@ const DeepfakeVerifier = () => {
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                             >
-                                <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300">
-                                    <Upload className="w-10 h-10 text-primary" />
+                                <div className="w-16 h-16 sm:w-24 sm:h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-8 group-hover:scale-110 transition-transform duration-300">
+                                    <Upload className="w-7 h-7 sm:w-10 sm:h-10 text-primary" />
                                 </div>
-                                <h3 className="text-2xl font-bold text-white mb-3">Drag & Drop or Click to Upload</h3>
-                                <p className="text-gray-400 mb-10">Supports MP4, AVI, JPG, PNG (Max 500MB)</p>
+                                <h3 className="text-lg sm:text-2xl font-bold text-white mb-2 sm:mb-3">Drag & Drop or Click to Upload</h3>
+                                <p className="text-gray-400 text-xs sm:text-sm mb-6 sm:mb-10">Supports MP4, AVI, JPG, PNG (Max 500MB)</p>
 
-                                <div className="flex justify-center gap-4">
+                                <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none mx-auto">
                                     <button
                                         onClick={onButtonClick}
-                                        className="px-8 py-3 bg-white/10 rounded-full text-sm font-bold hover:bg-white/20 transition-colors flex items-center gap-2 border border-white/5"
+                                        className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-white/10 rounded-full text-xs sm:text-sm font-bold hover:bg-white/20 transition-colors flex items-center justify-center gap-2 border border-white/5"
                                     >
                                         <FileVideo className="w-4 h-4" /> Upload Video
                                     </button>
                                     <button
                                         onClick={onButtonClick}
-                                        className="px-8 py-3 bg-white/10 rounded-full text-sm font-bold hover:bg-white/20 transition-colors flex items-center gap-2 border border-white/5"
+                                        className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-white/10 rounded-full text-xs sm:text-sm font-bold hover:bg-white/20 transition-colors flex items-center justify-center gap-2 border border-white/5"
                                     >
                                         <ImageIcon className="w-4 h-4" /> Upload Image
                                     </button>
@@ -310,7 +310,7 @@ const DeepfakeVerifier = () => {
                     </AnimatePresence>
 
                     {error && (
-                        <div className="absolute bottom-4 left-0 right-0 mx-auto w-fit px-4 py-2 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm flex items-center gap-2">
+                        <div className="absolute bottom-4 left-0 right-0 mx-auto w-fit px-4 py-2 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-xs sm:text-sm flex items-center gap-2">
                             <XCircle className="w-4 h-4" />
                             {error}
                         </div>
@@ -319,7 +319,7 @@ const DeepfakeVerifier = () => {
             </div>
 
             {/* Relevant Content Below */}
-            <div className="grid md:grid-cols-3 gap-6 w-full max-w-5xl mt-16">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full max-w-5xl mt-10 sm:mt-16">
                 <InfoCard
                     icon={<Shield className="w-6 h-6 text-secondary" />}
                     title="Privacy First"
