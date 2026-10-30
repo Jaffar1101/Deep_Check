@@ -12,6 +12,12 @@ const NewsVerifier = () => {
     const [trendingNews, setTrendingNews] = useState([]);
     const [trendingLoading, setTrendingLoading] = useState(true);
 
+    const formatUrl = (url) => {
+        if (!url) return '#';
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        return `https://${url}`;
+    };
+
     // Fetch trending news on mount
     useEffect(() => {
         const fetchTrending = async () => {
@@ -59,6 +65,18 @@ const NewsVerifier = () => {
             source_title: "DeepCheck Analysis"
         }
     ];
+
+    const handleSelectTrending = (news) => {
+        const text = news.claim_text || news.text || '';
+        if (text.startsWith('http://') || text.startsWith('https://')) {
+            setActiveTab('url');
+            setInputUrl(text);
+        } else {
+            setActiveTab('text');
+            setInputText(text);
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const handleVerify = async () => {
         if ((activeTab === 'text' && !inputText) || (activeTab === 'url' && !inputUrl)) return;
@@ -133,14 +151,14 @@ const NewsVerifier = () => {
                     <div className="flex gap-2 mb-3 sm:mb-4 p-1 bg-black/20 rounded-xl">
                         <button
                             onClick={() => setActiveTab('text')}
-                            className={`flex-1 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'text' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+                            className={`flex-1 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-2 cursor-pointer ${activeTab === 'text' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'
                                 }`}
                         >
                             <FileText className="w-4 h-4" /> Verify Text
                         </button>
                         <button
                             onClick={() => setActiveTab('url')}
-                            className={`flex-1 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'url' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'
+                            className={`flex-1 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-2 cursor-pointer ${activeTab === 'url' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'
                                 }`}
                         >
                             <LinkIcon className="w-4 h-4" /> Verify URL
@@ -153,7 +171,7 @@ const NewsVerifier = () => {
                             <textarea
                                 value={inputText}
                                 onChange={(e) => setInputText(e.target.value)}
-                                placeholder="Paste the news text or claim here..."
+                                placeholder="Paste the news text or claim here... or select a trending topic below"
                                 className="w-full h-36 sm:h-40 bg-transparent text-white p-3 sm:p-4 rounded-xl resize-none focus:outline-none placeholder:text-gray-600 text-sm sm:text-base"
                             />
                         ) : (
@@ -173,7 +191,7 @@ const NewsVerifier = () => {
                             <button
                                 onClick={handleVerify}
                                 disabled={loading || (activeTab === 'text' ? !inputText.trim() : !inputUrl.trim())}
-                                className="w-full sm:w-auto px-6 py-2.5 sm:py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl sm:rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 text-sm sm:text-base"
+                                className="w-full sm:w-auto px-6 py-2.5 sm:py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl sm:rounded-full font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 text-sm sm:text-base cursor-pointer"
                             >
                                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                                 {loading ? 'Verifying...' : 'Verify Now'}
@@ -258,12 +276,22 @@ const NewsVerifier = () => {
                                     <div className="text-left">
                                         <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Sources & Citations</h4>
                                         <div className="space-y-2">
-                                            {verificationResult.sources.map((source, idx) => (
-                                                <a key={idx} href={typeof source === 'string' ? source : source.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-primary hover:underline text-xs sm:text-sm">
-                                                    <ExternalLink className="w-4 h-4" />
-                                                    {typeof source === 'string' ? source : source.domain || source.url}
-                                                </a>
-                                            ))}
+                                            {verificationResult.sources.map((source, idx) => {
+                                                const rawUrl = typeof source === 'string' ? source : source.url || source.domain || '';
+                                                const label = typeof source === 'string' ? source : source.domain || source.url || 'Source Link';
+                                                return (
+                                                    <a
+                                                        key={idx}
+                                                        href={formatUrl(rawUrl)}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-2 text-primary hover:underline text-xs sm:text-sm"
+                                                    >
+                                                        <ExternalLink className="w-4 h-4 shrink-0" />
+                                                        <span className="truncate">{label}</span>
+                                                    </a>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}
@@ -276,10 +304,13 @@ const NewsVerifier = () => {
             {/* Trending News Section */}
             <div>
                 <div className="flex items-center justify-between mb-6 sm:mb-8">
-                    <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
-                        Trending Verification Requests
-                    </h2>
+                    <div>
+                        <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
+                            Trending Verification Requests
+                        </h2>
+                        <p className="text-xs sm:text-sm text-gray-400 mt-1">Click any trending card to load it directly into the verifier.</p>
+                    </div>
                 </div>
 
                 {trendingLoading ? (
@@ -292,7 +323,7 @@ const NewsVerifier = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                         {trendingNews.length > 0 ? (
                             trendingNews.map((news, index) => (
-                                <NewsCard key={index} news={news} />
+                                <NewsCard key={index} news={news} onSelect={handleSelectTrending} />
                             ))
                         ) : (
                             <div className="col-span-1 md:col-span-3 text-center py-12 text-gray-500">
@@ -306,13 +337,16 @@ const NewsVerifier = () => {
     );
 };
 
-const NewsCard = ({ news }) => {
+const NewsCard = ({ news, onSelect }) => {
     const status = (news.verification_status || news.rating || 'unverified').toLowerCase();
     const isFalse = status === 'false' || status === 'debunked' || status === 'fake';
     const isTrue = status === 'true' || status === 'authentic' || status === 'verified';
 
     return (
-        <div className="bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 transition-all group">
+        <div
+            onClick={() => onSelect && onSelect(news)}
+            className="bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-primary/50 hover:bg-white/[0.03] transition-all group cursor-pointer flex flex-col justify-between"
+        >
             <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${isFalse ? 'bg-red-500/10 text-red-500' :
@@ -326,17 +360,20 @@ const NewsCard = ({ news }) => {
                     </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+                <h3 className="text-base sm:text-lg font-bold text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">
                     {news.claim_text || news.text}
                 </h3>
 
-                <p className="text-gray-400 text-sm line-clamp-3 mb-4">
+                <p className="text-gray-400 text-xs sm:text-sm line-clamp-3 mb-4">
                     {news.explanation || news.summary || 'No explanation available.'}
                 </p>
+            </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                    <span className="text-xs text-gray-500 truncate max-w-[180px]">Source: {news.source_title || news.source || 'Global Feeds'}</span>
-                </div>
+            <div className="px-6 py-3 border-t border-white/5 flex items-center justify-between text-xs text-gray-500 bg-white/[0.01]">
+                <span className="truncate max-w-[180px]">Source: {news.source_title || news.source || 'Global Feeds'}</span>
+                <span className="text-primary font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    Verify <ArrowRight className="w-3 h-3" />
+                </span>
             </div>
         </div>
     );

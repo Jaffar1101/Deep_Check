@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Link as LinkIcon, Share2, AlertCircle, CheckCircle, HelpCircle, Loader2, Twitter, Facebook, Instagram, Youtube } from 'lucide-react';
+import { Search, Link as LinkIcon, Share2, AlertCircle, CheckCircle, HelpCircle, Loader2, Twitter, Facebook, Instagram, Youtube, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import API_BASE_URL from '../../config/api';
 
@@ -8,14 +8,21 @@ const ContentChecker = () => {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
 
-    const handleVerify = async () => {
-        if (!inputUrl.trim()) return;
+    const platformSamples = {
+        twitter: 'https://twitter.com/breakingnews/status/17849201948192',
+        facebook: 'https://facebook.com/watch/?v=928471928471',
+        instagram: 'https://instagram.com/p/C6XYZ123abc'
+    };
+
+    const handleVerify = async (urlToUse) => {
+        const targetUrl = typeof urlToUse === 'string' ? urlToUse : inputUrl;
+        if (!targetUrl.trim()) return;
         setLoading(true);
         setResult(null);
 
         try {
             const payload = {
-                text: `Verify this social media post / link: ${inputUrl}`,
+                text: `Verify this social media post / link: ${targetUrl}`,
                 audience_level: 'general'
             };
 
@@ -65,6 +72,13 @@ const ContentChecker = () => {
         }
     };
 
+    const handleSelectSample = (platform) => {
+        const sampleUrl = platformSamples[platform];
+        if (sampleUrl) {
+            setInputUrl(sampleUrl);
+        }
+    };
+
     return (
         <div className="max-w-4xl mx-auto space-y-8 sm:space-y-12">
 
@@ -89,19 +103,38 @@ const ContentChecker = () => {
                             />
                         </div>
                         <button
-                            onClick={handleVerify}
+                            onClick={() => handleVerify(inputUrl)}
                             disabled={loading || !inputUrl.trim()}
-                            className="mt-3 sm:mt-0 sm:absolute sm:right-2 sm:top-2 sm:bottom-2 w-full sm:w-auto px-6 py-3 sm:py-0 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
+                            className="mt-3 sm:mt-0 sm:absolute sm:right-2 sm:top-2 sm:bottom-2 w-full sm:w-auto px-6 py-3 sm:py-0 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer shadow-md"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                             Check
                         </button>
                     </div>
 
-                    <div className="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-gray-500 text-xs sm:text-sm">
-                        <span className="flex items-center gap-2"><Twitter className="w-4 h-4" /> Twitter/X</span>
-                        <span className="flex items-center gap-2"><Facebook className="w-4 h-4" /> Facebook</span>
-                        <span className="flex items-center gap-2"><Instagram className="w-4 h-4" /> Instagram</span>
+                    <div className="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-gray-400 text-xs sm:text-sm">
+                        <span className="text-gray-500">Quick samples:</span>
+                        <button
+                            type="button"
+                            onClick={() => handleSelectSample('twitter')}
+                            className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-lg border border-white/5"
+                        >
+                            <Twitter className="w-3.5 h-3.5 text-blue-400" /> Twitter/X
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleSelectSample('facebook')}
+                            className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-lg border border-white/5"
+                        >
+                            <Facebook className="w-3.5 h-3.5 text-blue-600" /> Facebook
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleSelectSample('instagram')}
+                            className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-lg border border-white/5"
+                        >
+                            <Instagram className="w-3.5 h-3.5 text-pink-500" /> Instagram
+                        </button>
                     </div>
                 </div>
             </div>

@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, CheckCircle, AlertTriangle, FileText, Video, Link as LinkIcon, Search, ArrowRight, Loader2 } from 'lucide-react';
+import { Clock, CheckCircle, AlertTriangle, FileText, Video, Link as LinkIcon, Search, ArrowRight, Loader2, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../config/api';
 
 const HistoryPage = () => {
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
+
+    const formatUrl = (url) => {
+        if (!url) return '#';
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        return `https://${url}`;
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,7 +38,8 @@ const HistoryPage = () => {
                             claim.verification_status === 'false' ? 'Fake/Misleading' : 'Uncertain',
                         confidence: Math.round(claim.credibility_score * 100) + '%',
                         icon: claim.source_url ? <LinkIcon className="w-5 h-5 text-orange-400" /> : <FileText className="w-5 h-5 text-purple-400" />,
-                        rawDate: claim.detected_at
+                        rawDate: claim.detected_at,
+                        sourceUrl: claim.source_url
                     }));
                     combinedHistory = [...combinedHistory, ...formattedClaims];
                 }
@@ -88,7 +98,6 @@ const HistoryPage = () => {
 
             if (response.ok) {
                 setHistory([]);
-                // Force reload to ensure clean state
                 window.location.reload();
             } else {
                 console.error('Failed to clear history');
@@ -101,41 +110,86 @@ const HistoryPage = () => {
         }
     };
 
+    const handleItemNavigate = (item) => {
+        if (item.type.includes('Deepfake')) {
+            navigate('/dashboard/deepfake');
+        } else if (item.type === 'URL/News') {
+            navigate('/dashboard/news');
+        } else {
+            navigate('/dashboard/news');
+        }
+    };
+
+    const filteredHistory = history.filter(item => {
+        if (!searchTerm.trim()) return true;
+        const q = searchTerm.toLowerCase();
+        return (
+            item.name?.toLowerCase().includes(q) ||
+            item.type?.toLowerCase().includes(q) ||
+            item.result?.toLowerCase().includes(q)
+        );
+    });
+
     return (
-        <div className="max-w-5xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+        <div className="max-w-5xl mx-auto space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1 sm:mb-2">Verification History</h1>
-                    <p className="text-gray-400 text-sm sm:text-base">View and manage your past verification results.</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">Verification History</h1>
+                    <p className="text-gray-400 text-sm">View, search, and jump to your past verification results.</p>
                 </div>
-                <button
-                    onClick={handleClearHistory}
-                    className="w-full sm:w-auto px-4 py-2 bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white rounded-lg text-sm font-medium transition-colors border border-transparent hover:border-red-500/30"
-                >
-                    Clear History
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleClearHistory}
+                        disabled={history.length === 0}
+                        className="w-full sm:w-auto px-4 py-2 bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white disabled:opacity-40 disabled:cursor-not-allowed rounded-lg text-xs sm:text-sm font-medium transition-colors border border-transparent hover:border-red-500/30 cursor-pointer"
+                    >
+                        Clear History
+                    </button>
+                </div>
             </div>
+
+            {/* Search filter */}
+            {history.length > 0 && (
+                <div className="relative">
+                    <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search verification history by title, type, or verdict..."
+                        className="w-full bg-[#111] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50"
+                    />
+                </div>
+            )}
 
             {loading ? (
                 <div className="flex justify-center py-20">
                     <Loader2 className="w-8 h-8 text-primary animate-spin" />
                 </div>
             ) : history.length === 0 ? (
-                <div className="text-center py-20 text-gray-500 text-sm sm:text-base">
-                    No verification history found.
+                <div className="text-center py-20 text-gray-500 text-sm sm:text-base bg-white/5 rounded-2xl border border-white/5">
+                    No verification history found. Submit media or text claims to see results here.
+                </div>
+            ) : filteredHistory.length === 0 ? (
+                <div className="text-center py-16 text-gray-500 text-sm bg-white/5 rounded-2xl border border-white/5">
+                    No results match "{searchTerm}". Try clearing your search.
                 </div>
             ) : (
                 <div className="space-y-3 sm:space-y-4">
-                    {history.map((item) => (
-                        <div key={item.id} className="bg-[#111] border border-white/10 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 hover:border-white/20 transition-all group">
+                    {filteredHistory.map((item) => (
+                        <div
+                            key={item.id}
+                            onClick={() => handleItemNavigate(item)}
+                            className="bg-[#111] border border-white/10 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 hover:border-primary/40 hover:bg-white/[0.03] transition-all group cursor-pointer"
+                        >
                             <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                                <div className="p-2.5 sm:p-3 bg-white/5 rounded-lg shrink-0">
+                                <div className="p-2.5 sm:p-3 bg-white/5 rounded-lg shrink-0 group-hover:scale-105 transition-transform">
                                     {item.icon}
                                 </div>
 
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 sm:gap-3 mb-1">
-                                        <span className="text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">{item.type}</span>
+                                        <span className="text-[10px] sm:text-xs font-semibold text-primary uppercase tracking-wider">{item.type}</span>
                                         <span className="text-[10px] sm:text-xs text-gray-600 flex items-center gap-1">
                                             <Clock className="w-3 h-3" /> {formatDate(item.date)}
                                         </span>
@@ -157,9 +211,30 @@ const HistoryPage = () => {
                                     <div className="text-[10px] sm:text-xs text-gray-500">{item.confidence} Confidence</div>
                                 </div>
 
-                                <button className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors">
-                                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    {item.sourceUrl && (
+                                        <a
+                                            href={formatUrl(item.sourceUrl)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            title="Open Original Source"
+                                            className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors"
+                                        >
+                                            <ExternalLink className="w-4 h-4" />
+                                        </a>
+                                    )}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleItemNavigate(item);
+                                        }}
+                                        title="View in Verifier"
+                                        className="p-2 hover:bg-primary/20 rounded-full text-gray-400 hover:text-primary transition-colors cursor-pointer"
+                                    >
+                                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-0.5 transition-transform" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}

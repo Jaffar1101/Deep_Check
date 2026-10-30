@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { FileText, Link as LinkIcon, Youtube, Search, ArrowRight, Loader2, CheckCircle, AlertTriangle, HelpCircle, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import API_BASE_URL from '../../config/api';
@@ -10,38 +10,54 @@ const ToolsPage = () => {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
 
+    const formatUrl = (url) => {
+        if (!url) return '#';
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        return `https://${url}`;
+    };
+
     const tools = {
         text: {
             title: 'Text Verifier',
             description: 'Analyze text for AI generation patterns and factual accuracy.',
             icon: <FileText className="w-6 h-6 text-primary" />,
-            placeholder: 'Paste the text you want to verify here...',
-            inputType: 'textarea'
+            placeholder: 'Paste the claim or text you want to verify here...',
+            inputType: 'textarea',
+            sample: 'Scientists discover new method to turn ocean plastic into clean fuel.'
         },
         article: {
             title: 'Article Verifier',
             description: 'Verify the credibility and bias of news articles.',
             icon: <Search className="w-6 h-6 text-secondary" />,
-            placeholder: 'Paste article URL...',
-            inputType: 'url'
+            placeholder: 'https://news-outlet.com/article/headline',
+            inputType: 'url',
+            sample: 'https://www.reuters.com/technology'
         },
         url: {
             title: 'URL Verifier',
             description: 'Check if a website is a known source of misinformation.',
             icon: <LinkIcon className="w-6 h-6 text-accent" />,
-            placeholder: 'https://example.com',
-            inputType: 'url'
+            placeholder: 'https://example-source.com',
+            inputType: 'url',
+            sample: 'https://apnews.com'
         },
         youtube: {
             title: 'YouTube Checker',
             description: 'Analyze YouTube videos for deepfakes and misleading content.',
             icon: <Youtube className="w-6 h-6 text-red-500" />,
             placeholder: 'https://youtube.com/watch?v=...',
-            inputType: 'url'
+            inputType: 'url',
+            sample: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
         }
     };
 
     const currentTool = tools[toolType] || tools.text;
+
+    // Reset input and result whenever switching toolType via navigation
+    useEffect(() => {
+        setInput('');
+        setResult(null);
+    }, [toolType]);
 
     const handleVerify = async () => {
         if (!input.trim()) return;
@@ -99,18 +115,38 @@ const ToolsPage = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                <div className="p-3 bg-white/5 rounded-xl border border-white/10 shrink-0">
-                    {currentTool.icon}
+        <div className="max-w-4xl mx-auto space-y-6">
+            {/* Tool Header and Switcher */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="p-3 bg-white/5 rounded-xl border border-white/10 shrink-0">
+                        {currentTool.icon}
+                    </div>
+                    <div>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">{currentTool.title}</h1>
+                        <p className="text-gray-400 text-sm">{currentTool.description}</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">{currentTool.title}</h1>
-                    <p className="text-gray-400 text-sm sm:text-base">{currentTool.description}</p>
+
+                {/* Quick tool switcher pills */}
+                <div className="flex flex-wrap gap-1.5 p-1 bg-black/40 rounded-xl border border-white/10 text-xs">
+                    {Object.entries(tools).map(([key, t]) => (
+                        <Link
+                            key={key}
+                            to={`/dashboard/tools/${key}`}
+                            className={`px-3 py-1.5 rounded-lg transition-all ${
+                                toolType === key || (!toolType && key === 'text')
+                                    ? 'bg-primary text-white font-semibold shadow-sm'
+                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            }`}
+                        >
+                            {t.title.split(' ')[0]}
+                        </Link>
+                    ))}
                 </div>
             </div>
 
-            <div className="bg-[#111] border border-white/10 rounded-2xl p-4 sm:p-8 mb-6 sm:mb-8">
+            <div className="bg-[#111] border border-white/10 rounded-2xl p-4 sm:p-8">
                 <div className="relative">
                     {currentTool.inputType === 'textarea' ? (
                         <textarea
@@ -131,11 +167,20 @@ const ToolsPage = () => {
                         </div>
                     )}
 
-                    <div className="mt-4 flex justify-end">
+                    <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        {currentTool.sample && (
+                            <button
+                                type="button"
+                                onClick={() => setInput(currentTool.sample)}
+                                className="text-xs text-primary hover:text-primary/80 underline cursor-pointer"
+                            >
+                                Paste sample {currentTool.title.toLowerCase()}
+                            </button>
+                        )}
                         <button
                             onClick={handleVerify}
                             disabled={loading || !input.trim()}
-                            className="w-full sm:w-auto px-8 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
+                            className="w-full sm:w-auto px-8 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer shadow-md"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Analyze'}
                         </button>
@@ -187,12 +232,22 @@ const ToolsPage = () => {
                                     <div className="mt-4 pt-4 border-t border-white/10 text-left">
                                         <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Sources</h4>
                                         <div className="space-y-1">
-                                            {result.sources.map((src, i) => (
-                                                <a key={i} href={typeof src === 'string' ? src : src.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
-                                                    <ExternalLink className="w-3 h-3" />
-                                                    {typeof src === 'string' ? src : src.domain || src.url}
-                                                </a>
-                                            ))}
+                                            {result.sources.map((src, i) => {
+                                                const rawUrl = typeof src === 'string' ? src : src.url || src.domain || '';
+                                                const label = typeof src === 'string' ? src : src.domain || src.url || 'Source';
+                                                return (
+                                                    <a
+                                                        key={i}
+                                                        href={formatUrl(rawUrl)}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-xs text-primary hover:underline flex items-center gap-1"
+                                                    >
+                                                        <ExternalLink className="w-3 h-3 shrink-0" />
+                                                        <span className="truncate">{label}</span>
+                                                    </a>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}
