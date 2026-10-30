@@ -172,7 +172,7 @@ const NewsVerifier = () => {
                                 value={inputText}
                                 onChange={(e) => setInputText(e.target.value)}
                                 placeholder="Paste the news text or claim here... or select a trending topic below"
-                                className="w-full h-36 sm:h-40 bg-transparent text-white p-3 sm:p-4 rounded-xl resize-none focus:outline-none placeholder:text-gray-600 text-sm sm:text-base"
+                                className="w-full h-36 sm:h-40 bg-transparent text-slate-900 dark:text-white p-3 sm:p-4 rounded-xl resize-none focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 text-sm sm:text-base"
                             />
                         ) : (
                             <div className="flex items-center px-3 sm:px-4 h-24 sm:h-40">
@@ -181,7 +181,7 @@ const NewsVerifier = () => {
                                     value={inputUrl}
                                     onChange={(e) => setInputUrl(e.target.value)}
                                     placeholder="https://example.com/news-article"
-                                    className="w-full bg-transparent text-white text-sm sm:text-lg focus:outline-none placeholder:text-gray-600"
+                                    className="w-full bg-transparent text-slate-900 dark:text-white text-sm sm:text-lg focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600"
                                 />
                             </div>
                         )}

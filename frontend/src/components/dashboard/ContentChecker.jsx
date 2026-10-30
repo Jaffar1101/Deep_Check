@@ -99,7 +99,7 @@ const ContentChecker = () => {
                                 value={inputUrl}
                                 onChange={(e) => setInputUrl(e.target.value)}
                                 placeholder="Paste social media link (Twitter/X, Facebook, Instagram, TikTok)..."
-                                className="w-full bg-black/20 border border-white/10 rounded-xl py-3.5 sm:py-4 pl-12 pr-4 sm:pr-32 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-sm sm:text-lg"
+                                className="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl py-3.5 sm:py-4 pl-12 pr-4 sm:pr-32 text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-sm sm:text-lg"
                             />
                         </div>
                         <button

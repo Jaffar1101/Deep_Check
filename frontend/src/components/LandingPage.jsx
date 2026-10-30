@@ -3,10 +3,11 @@ import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
 import {
     Shield, CheckCircle, AlertTriangle, ArrowRight, Play, FileVideo,
     Search, Plus, Minus, HelpCircle, Mail, Menu, X, ExternalLink,
-    Lock, CheckCircle2, Phone, FileText
+    Lock, CheckCircle2, Phone, FileText, Sun, Moon
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const LandingPage = () => {
     const videoRef = useRef(null);
@@ -18,6 +19,7 @@ const LandingPage = () => {
     const rafIdRef = useRef(null);
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAuth();
+    const { isDark, toggleTheme } = useTheme();
 
     // Scroll progress for the entire container
     const { scrollYProgress } = useScroll({
@@ -123,7 +125,17 @@ const LandingPage = () => {
                         <button onClick={() => scrollToSection('faq')} className="hover:text-white transition-colors cursor-pointer">FAQ's</button>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        {/* Theme Toggle Button */}
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                            aria-label="Toggle Theme"
+                        >
+                            {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-purple-600" />}
+                        </button>
+
                         {isAuthenticated ? (
                             <Link to="/dashboard">
                                 <button className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-full text-xs sm:text-sm font-semibold text-white transition-all shadow-lg shadow-primary/25 cursor-pointer flex items-center gap-2">
@@ -133,7 +145,7 @@ const LandingPage = () => {
                             </Link>
                         ) : (
                             <Link to="/signin">
-                                <button className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#1a1a1a] hover:bg-[#252525] border border-white/10 rounded-full text-xs sm:text-sm font-semibold text-white transition-all shadow-lg shadow-black/50 cursor-pointer">
+                                <button className="px-4 sm:px-6 py-2 sm:py-2.5 bg-surface hover:bg-black/5 dark:hover:bg-[#252525] border border-slate-200 dark:border-white/10 rounded-full text-xs sm:text-sm font-semibold text-slate-900 dark:text-white transition-all shadow-lg shadow-black/5 cursor-pointer">
                                     Sign In
                                 </button>
                             </Link>
@@ -182,6 +194,15 @@ const LandingPage = () => {
                                 className="text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
                             >
                                 FAQ's
+                            </button>
+                            <button
+                                onClick={toggleTheme}
+                                className="text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer flex items-center justify-between"
+                            >
+                                <span>Theme</span>
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-300">
+                                    {isDark ? 'Dark Mode' : 'Light Mode'}
+                                </span>
                             </button>
                             {isAuthenticated && (
                                 <Link

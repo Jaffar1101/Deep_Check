@@ -4,18 +4,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Shield, ChevronDown, Settings, LogOut, User,
     FileVideo, Newspaper, FileText, Link as LinkIcon, Youtube, History,
-    Menu, X, Search, Check, Edit2
+    Menu, X, Search, Check, Edit2, Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const DashboardLayout = () => {
     const [isToolsOpen, setIsToolsOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-    const [darkMode, setDarkMode] = useState(true);
     const [notifications, setNotifications] = useState(true);
 
+    const { theme, isDark, toggleTheme } = useTheme();
     const { user, logout, updateUser } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
@@ -58,14 +59,14 @@ const DashboardLayout = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background text-white flex flex-col">
+        <div className="min-h-screen bg-background text-slate-900 dark:text-white flex flex-col transition-colors duration-200">
             {/* Top Navigation */}
-            <nav className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 py-3">
+            <nav className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 px-4 sm:px-6 py-3">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     {/* Logo - Navigates to dashboard root */}
                     <Link to="/dashboard" className="flex items-center gap-2 group">
                         <img src={`${import.meta.env.BASE_URL}logo.png`} alt="DeepCheck Logo" className="w-8 h-8 object-contain" />
-                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-gray-400">
                             DeepCheck
                         </span>
                     </Link>
@@ -77,8 +78,8 @@ const DashboardLayout = () => {
                                 key={link.path}
                                 to={link.path}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${isActive(link.path)
-                                    ? 'bg-white/10 text-white shadow-sm border border-white/5'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                    ? 'bg-black/5 dark:bg-white/10 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-white/5 font-semibold'
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                                     }`}
                             >
                                 {link.icon}
@@ -90,8 +91,8 @@ const DashboardLayout = () => {
                         <div className="relative group">
                             <button
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 cursor-pointer ${location.pathname.includes('/tools') || location.pathname.includes('/history')
-                                    ? 'bg-white/10 text-white border border-white/5'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                    ? 'bg-black/5 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-200 dark:border-white/5'
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                                     }`}
                                 onClick={() => setIsToolsOpen(!isToolsOpen)}
                             >
@@ -107,7 +108,7 @@ const DashboardLayout = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
                                         transition={{ duration: 0.15 }}
-                                        className="absolute top-full right-0 mt-2 w-56 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50"
+                                        className="absolute top-full right-0 mt-2 w-56 bg-surface border border-slate-200 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-50"
                                         onMouseLeave={() => setIsToolsOpen(false)}
                                     >
                                         <div className="p-2 space-y-1">
@@ -115,10 +116,10 @@ const DashboardLayout = () => {
                                                 <Link
                                                     key={tool.path}
                                                     to={tool.path}
-                                                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                                                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-colors"
                                                     onClick={() => setIsToolsOpen(false)}
                                                 >
-                                                    <div className="p-1.5 rounded-md bg-white/5 text-primary">
+                                                    <div className="p-1.5 rounded-md bg-black/5 dark:bg-white/5 text-primary">
                                                         {tool.icon}
                                                     </div>
                                                     {tool.name}
@@ -132,16 +133,30 @@ const DashboardLayout = () => {
                     </div>
 
                     {/* Right Actions */}
-                    <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
                         <Link
                             to="/"
-                            className="hidden sm:inline-flex text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white border border-white/10 transition-colors"
+                            className="hidden sm:inline-flex text-xs font-semibold px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-white/10 transition-colors"
                         >
                             Landing Page
                         </Link>
 
+                        {/* Theme Toggle Button (Quick Header Switch) */}
                         <button
-                            className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors relative cursor-pointer"
+                            onClick={toggleTheme}
+                            className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                            aria-label="Toggle Theme"
+                        >
+                            {isDark ? (
+                                <Sun className="w-5 h-5 text-amber-400 hover:rotate-45 transition-transform" />
+                            ) : (
+                                <Moon className="w-5 h-5 text-purple-600 hover:-rotate-12 transition-transform" />
+                            )}
+                        </button>
+
+                        <button
+                            className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors relative cursor-pointer"
                             onClick={() => setIsSettingsOpen(true)}
                             title="Open Settings"
                             aria-label="Open Settings"
@@ -156,7 +171,7 @@ const DashboardLayout = () => {
                             title={`Signed in as ${user?.name || 'User'}`}
                             aria-label="User account"
                         >
-                            <div className="w-full h-full rounded-full bg-black flex items-center justify-center font-bold text-xs text-white">
+                            <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-bold text-xs text-white">
                                 {user?.name ? user.name.charAt(0).toUpperCase() : <User className="w-4 h-4 text-white" />}
                             </div>
                         </button>
@@ -164,7 +179,7 @@ const DashboardLayout = () => {
                         {/* Mobile Menu Toggle Button */}
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="md:hidden p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white cursor-pointer"
+                            className="md:hidden p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white cursor-pointer"
                             aria-label="Toggle Dashboard Menu"
                         >
                             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -179,7 +194,7 @@ const DashboardLayout = () => {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="md:hidden mt-3 pt-3 border-t border-white/10 flex flex-col space-y-2 pb-3"
+                            className="md:hidden mt-3 pt-3 border-t border-slate-200 dark:border-white/10 flex flex-col space-y-2 pb-3"
                         >
                             <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 py-1">
                                 Verifiers
@@ -190,11 +205,11 @@ const DashboardLayout = () => {
                                     to={link.path}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-3 ${isActive(link.path)
-                                        ? 'bg-white/10 text-white font-semibold'
-                                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                                        ? 'bg-black/5 dark:bg-white/10 text-slate-900 dark:text-white font-semibold'
+                                        : 'text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                                         }`}
                                 >
-                                    <div className="p-1 rounded-md bg-white/5 text-primary">
+                                    <div className="p-1 rounded-md bg-black/5 dark:bg-white/5 text-primary">
                                         {link.icon}
                                     </div>
                                     {link.name}
@@ -210,22 +225,40 @@ const DashboardLayout = () => {
                                     to={tool.path}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className={`px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-3 ${isActive(tool.path)
-                                        ? 'bg-white/10 text-white font-semibold'
-                                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                                        ? 'bg-black/5 dark:bg-white/10 text-slate-900 dark:text-white font-semibold'
+                                        : 'text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                                         }`}
                                 >
-                                    <div className="p-1 rounded-md bg-white/5 text-primary">
+                                    <div className="p-1 rounded-md bg-black/5 dark:bg-white/5 text-primary">
                                         {tool.icon}
                                     </div>
                                     {tool.name}
                                 </Link>
                             ))}
 
-                            <div className="pt-2 border-t border-white/10 px-3">
+                            {/* Mobile Quick Theme Switch */}
+                            <div className="pt-2 border-t border-slate-200 dark:border-white/10 px-3">
+                                <button
+                                    onClick={toggleTheme}
+                                    className="w-full px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-1 rounded-md bg-black/5 dark:bg-white/5 text-primary">
+                                            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-purple-600" />}
+                                        </div>
+                                        <span>{isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}</span>
+                                    </div>
+                                    <span className="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-slate-600 dark:text-gray-400 font-medium">
+                                        {isDark ? 'Dark' : 'Light'}
+                                    </span>
+                                </button>
+                            </div>
+
+                            <div className="pt-2 border-t border-slate-200 dark:border-white/10 px-3">
                                 <Link
                                     to="/"
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="text-xs text-gray-400 hover:text-white flex items-center gap-2 py-1"
+                                    className="text-xs text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2 py-1"
                                 >
                                     ← Back to Landing Page
                                 </Link>
@@ -259,16 +292,16 @@ const DashboardLayout = () => {
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 h-full w-full sm:w-80 bg-[#111] border-l border-white/10 z-50 shadow-2xl flex flex-col"
+                            className="fixed top-0 right-0 h-full w-full sm:w-80 bg-surface border-l border-slate-200 dark:border-white/10 z-50 shadow-2xl flex flex-col"
                         >
-                            <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                                <h2 className="text-xl font-bold text-white">Settings</h2>
+                            <div className="p-6 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Settings</h2>
                                 <button
                                     onClick={() => setIsSettingsOpen(false)}
-                                    className="p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                                    className="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors cursor-pointer"
                                     aria-label="Close Settings"
                                 >
-                                    <X className="w-5 h-5 text-gray-400 hover:text-white" />
+                                    <X className="w-5 h-5 text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white" />
                                 </button>
                             </div>
 
@@ -277,16 +310,16 @@ const DashboardLayout = () => {
                                     <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Account</h3>
                                     <button
                                         onClick={() => setIsProfileModalOpen(true)}
-                                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left cursor-pointer border border-white/5"
+                                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-left cursor-pointer border border-slate-200 dark:border-white/5"
                                     >
                                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary p-[1px] shrink-0">
-                                            <div className="w-full h-full rounded-full bg-black flex items-center justify-center font-bold text-sm text-white">
+                                            <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-bold text-sm text-white">
                                                 {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                                             </div>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="text-white font-medium truncate">{user?.name || 'Verified User'}</div>
-                                            <div className="text-xs text-gray-400 truncate">{user?.email || 'user@example.com'}</div>
+                                            <div className="text-slate-900 dark:text-white font-medium truncate">{user?.name || 'Verified User'}</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email || 'user@example.com'}</div>
                                             <div className="text-[10px] text-primary mt-0.5">{user?.role || 'Verified Researcher'}</div>
                                         </div>
                                         <Edit2 className="w-4 h-4 text-gray-400" />
@@ -295,31 +328,57 @@ const DashboardLayout = () => {
 
                                 <div className="space-y-4">
                                     <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Preferences</h3>
-                                    <div
-                                        onClick={() => setDarkMode(!darkMode)}
-                                        className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+                                    <button
+                                        type="button"
+                                        onClick={toggleTheme}
+                                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-left border border-slate-200 dark:border-white/5"
                                     >
-                                        <span className="text-gray-300 text-sm font-medium">Dark Mode</span>
-                                        <div className={`w-11 h-6 rounded-full transition-colors relative ${darkMode ? 'bg-primary' : 'bg-gray-700'}`}>
-                                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${darkMode ? 'right-1' : 'left-1'}`} />
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 text-primary">
+                                                {isDark ? <Moon className="w-4 h-4 text-purple-400" /> : <Sun className="w-4 h-4 text-amber-500" />}
+                                            </div>
+                                            <div>
+                                                <span className="text-sm font-medium text-slate-900 dark:text-gray-200 block">
+                                                    {isDark ? 'Dark Mode' : 'Light Mode'}
+                                                </span>
+                                                <span className="text-xs text-gray-500 block">
+                                                    {isDark ? 'Dark theme enabled' : 'Light theme enabled'}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
+
+                                        {/* Toggle switch aligned with theme state */}
+                                        <div className={`w-12 h-6 rounded-full transition-colors relative flex items-center p-0.5 ${isDark ? 'bg-primary' : 'bg-slate-300 dark:bg-gray-700'}`}>
+                                            <motion.div
+                                                layout
+                                                transition={{ type: "spring", stiffness: 600, damping: 35 }}
+                                                className={`w-5 h-5 bg-white rounded-full shadow-md flex items-center justify-center ${isDark ? 'ml-auto' : 'mr-auto'}`}
+                                            >
+                                                {isDark ? (
+                                                    <Moon className="w-2.5 h-2.5 text-primary" />
+                                                ) : (
+                                                    <Sun className="w-2.5 h-2.5 text-amber-500" />
+                                                )}
+                                            </motion.div>
+                                        </div>
+                                    </button>
+
                                     <div
                                         onClick={() => setNotifications(!notifications)}
-                                        className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+                                        className="flex items-center justify-between px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors border border-slate-200 dark:border-white/5"
                                     >
-                                        <span className="text-gray-300 text-sm font-medium">Alert Notifications</span>
-                                        <div className={`w-11 h-6 rounded-full transition-colors relative ${notifications ? 'bg-primary' : 'bg-gray-700'}`}>
-                                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${notifications ? 'right-1' : 'left-1'}`} />
+                                        <span className="text-sm font-medium text-slate-900 dark:text-gray-200">Alert Notifications</span>
+                                        <div className={`w-12 h-6 rounded-full transition-colors relative flex items-center p-0.5 ${notifications ? 'bg-primary' : 'bg-slate-300 dark:bg-gray-700'}`}>
+                                            <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-all ${notifications ? 'ml-auto' : 'mr-auto'}`} />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-2 pt-2 border-t border-white/5">
+                                <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-white/5">
                                     <Link
                                         to="/"
                                         onClick={() => setIsSettingsOpen(false)}
-                                        className="block w-full py-2.5 px-4 text-xs text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+                                        className="block w-full py-2.5 px-4 text-xs text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                                     >
                                         View Public Landing Page
                                     </Link>
@@ -327,15 +386,15 @@ const DashboardLayout = () => {
                                         href="https://github.com/Jaffar1101/Deep_Check"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="block w-full py-2.5 px-4 text-xs text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+                                        className="block w-full py-2.5 px-4 text-xs text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                                     >
                                         GitHub Repository
                                     </a>
                                 </div>
                             </div>
 
-                            {/* Sign Out Button - securely clears session and replaces history */}
-                            <div className="p-6 border-t border-white/10">
+                            {/* Sign Out Button */}
+                            <div className="p-6 border-t border-slate-200 dark:border-white/10">
                                 <button
                                     onClick={handleSignOut}
                                     className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors font-medium cursor-pointer"
@@ -365,20 +424,20 @@ const DashboardLayout = () => {
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.95, opacity: 0 }}
                                 onClick={(e) => e.stopPropagation()}
-                                className="bg-[#141414] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl relative"
+                                className="bg-surface border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl relative"
                             >
-                                <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
-                                    <h3 className="text-lg font-bold text-white">Account Profile</h3>
+                                <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-4">
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Account Profile</h3>
                                     <button
                                         onClick={() => setIsProfileModalOpen(false)}
-                                        className="p-1 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white cursor-pointer"
+                                        className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white cursor-pointer"
                                     >
                                         <X className="w-5 h-5" />
                                     </button>
                                 </div>
 
                                 {savedNotification && (
-                                    <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-2 text-xs text-green-400">
+                                    <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-2 text-xs text-green-600 dark:text-green-400 font-medium">
                                         <Check className="w-4 h-4" />
                                         Profile updated successfully!
                                     </div>
@@ -386,33 +445,33 @@ const DashboardLayout = () => {
 
                                 <form onSubmit={handleSaveProfile} className="space-y-4">
                                     <div>
-                                        <label className="text-xs text-gray-400 uppercase font-semibold">Display Name</label>
+                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Display Name</label>
                                         <input
                                             type="text"
                                             value={editName}
                                             onChange={(e) => setEditName(e.target.value)}
-                                            className="w-full mt-1 bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50"
+                                            className="w-full mt-1 bg-black/5 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-primary/50"
                                             placeholder="Your name"
                                             required
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-400 uppercase font-semibold">Email</label>
+                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Email</label>
                                         <input
                                             type="email"
                                             value={user?.email || ''}
                                             disabled
-                                            className="w-full mt-1 bg-black/20 border border-white/5 rounded-xl px-4 py-2.5 text-gray-500 text-sm cursor-not-allowed"
+                                            className="w-full mt-1 bg-black/5 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-xl px-4 py-2.5 text-gray-500 text-sm cursor-not-allowed"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4 pt-2 text-xs text-gray-400">
-                                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                    <div className="grid grid-cols-2 gap-4 pt-2 text-xs text-gray-500 dark:text-gray-400">
+                                        <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-slate-200 dark:border-white/5">
                                             <div className="text-gray-500">Role</div>
-                                            <div className="text-white font-medium mt-0.5">{user?.role || 'Researcher'}</div>
+                                            <div className="text-slate-900 dark:text-white font-medium mt-0.5">{user?.role || 'Researcher'}</div>
                                         </div>
-                                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                        <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-slate-200 dark:border-white/5">
                                             <div className="text-gray-500">Member Since</div>
-                                            <div className="text-white font-medium mt-0.5">{user?.joinedAt || '2025'}</div>
+                                            <div className="text-slate-900 dark:text-white font-medium mt-0.5">{user?.joinedAt || '2025'}</div>
                                         </div>
                                     </div>
 
@@ -420,7 +479,7 @@ const DashboardLayout = () => {
                                         <button
                                             type="button"
                                             onClick={() => setIsProfileModalOpen(false)}
-                                            className="flex-1 py-2.5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-sm font-semibold cursor-pointer"
+                                            className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-sm font-semibold cursor-pointer"
                                         >
                                             Close
                                         </button>
